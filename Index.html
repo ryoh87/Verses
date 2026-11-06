@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Verse Keeper</title>
+<link href="https://fonts.googleapis.com/css2?family=Literata:ital,wght@0,400;0,600;1,400&family=Figtree:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#E9EEF0;--surface:#F7F9FA;--ink:#1B2540;--muted:#566079;--accent:#2F4BA0;--on-accent:#fff;--gold:#946514;--ok:#1F7550;--bad:#B3402F;--line:#C6D0D7;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#121828;--surface:#1B2338;--ink:#E6EAF5;--muted:#9AA6C2;--accent:#8EA6F0;--on-accent:#121828;--gold:#E0B25A;--ok:#6CC59A;--bad:#F08A78;--line:#2D3855}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#121828;--surface:#1B2338;--ink:#E6EAF5;--muted:#9AA6C2;--accent:#8EA6F0;--on-accent:#121828;--gold:#E0B25A;--ok:#6CC59A;--bad:#F08A78;--line:#2D3855}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 1rem/1.5 Figtree,system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:640px;margin:0 auto;padding:20px 18px 48px}
+header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:14px}
+h1{font:600 1.35rem Literata,Georgia,serif;margin:0}
+#due{color:var(--muted);font-size:.9rem}
+nav{display:flex;gap:6px;margin-bottom:18px;border-bottom:1px solid var(--line)}
+nav button{background:none;border:0;border-bottom:3px solid transparent;padding:10px 4px;margin-right:14px;font:600 1rem Figtree,sans-serif;color:var(--muted);cursor:pointer}
+nav button[aria-pressed="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+button{font-family:inherit}
+button:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px 20px}
+.bar{height:4px;background:var(--line);border-radius:2px;overflow:hidden;margin-bottom:10px}
+.bar i{display:block;height:100%;background:var(--accent)}
+.meta{color:var(--muted);font-size:.88rem;margin:0 0 4px}
+.ref{font:600 1.1rem Figtree,sans-serif;color:var(--gold);margin:0 0 14px}
+.modes{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap}
+.modes button,.levels button{background:none;border:1px solid var(--line);color:var(--ink);border-radius:999px;padding:6px 14px;font-size:.92rem;cursor:pointer}
+.modes button[aria-pressed="true"],.levels button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.levels{display:flex;gap:6px;align-items:center;margin:0 0 14px;flex-wrap:wrap;color:var(--muted);font-size:.9rem}
+.verse{font:400 1.4rem/1.65 Literata,Georgia,serif;margin:0 0 18px;max-width:60ch}
+.prompt{color:var(--muted);margin:0 0 16px}
+.gap{font:inherit;color:transparent;background:none;border:0;border-bottom:2px solid var(--accent);border-radius:0;padding:0;margin:0;min-width:calc(var(--n)*.5em);cursor:pointer}
+.gap.on{color:var(--accent);border-bottom-color:transparent}
+.primary,.ghost{border-radius:8px;padding:11px 18px;font-size:1rem;font-weight:600;cursor:pointer;border:1px solid var(--accent)}
+.primary{background:var(--accent);color:var(--on-accent)}
+.ghost{background:none;color:var(--accent)}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.grade{margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}
+.grade p{margin:0 0 10px;color:var(--muted);font-size:.9rem}
+textarea{width:100%;min-height:130px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:12px;font:400 1.05rem/1.55 Literata,Georgia,serif;resize:vertical;margin-bottom:12px}
+.ok{color:var(--ok)}.miss{color:var(--bad);text-decoration:underline wavy}.extra{color:var(--muted);text-decoration:line-through}
+.acc{font-weight:600;margin:0 0 8px}
+.list{list-style:none;padding:0;margin:22px 0 0}
+.list li{padding:14px 0;border-top:1px solid var(--line);display:flex;gap:12px;justify-content:space-between;align-items:flex-start}
+.list b{color:var(--gold)}
+.list p{margin:2px 0 0;font:400 .95rem/1.5 Literata,Georgia,serif;color:var(--ink)}
+.list small{color:var(--muted)}
+.del{background:none;border:0;color:var(--muted);cursor:pointer;font-size:.9rem;padding:4px 0;white-space:nowrap}
+.del.sure{color:var(--bad);font-weight:600}
+.note{color:var(--muted);font-size:.92rem;margin:0 0 10px}
+.msg{margin:10px 0 0;font-size:.92rem}
+h2{font:600 1.2rem Literata,Georgia,serif;margin:0 0 8px}
+h3.sec{font:600 1rem Figtree,sans-serif;color:var(--muted);margin:26px 0 0}
+.rate button{flex:1;min-width:70px;display:flex;flex-direction:column;align-items:center;gap:2px}
+.rate small{font-weight:400;font-size:.78rem;opacity:.85}
+.levels button:disabled{opacity:.4;cursor:default}
+.duebox{margin:0 0 12px}.duebox span{color:var(--muted)}
+.week{margin-bottom:16px}
+.remind{margin:0 0 14px;padding:10px 12px;border-left:4px solid var(--gold);background:var(--bg);border-radius:0 8px 8px 0}.remind.ok{border-left-color:var(--ok)}.week .wk{font:600 1.2rem Literata,Georgia,serif;margin:0 0 8px}
+#app .list{margin-top:6px}
+input{background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:4px 8px;font:inherit;width:4em;margin-left:6px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+<header><h1>Verse Keeper</h1><span id="due"></span></header>
+<nav><button data-act="tab" data-v="practice">Practice</button><button data-act="tab" data-v="verses">My verses</button></nav>
+<div id="app"></div>
+</main>
+<script>
+const KEY='verseKeeper.v1', DAY=864e5, GAP=[0,1,3,7,14,30];
+const SCHED={A:['2026-09-28','2026-10-05','2026-10-05','2026-10-12','2026-10-19','2026-10-19'],B:['2026-10-26','2026-11-02','2026-11-09','2026-11-16','2026-11-23','2026-11-30','2026-12-07','2026-12-14','2026-12-21','2027-01-04','2027-01-11','2027-01-18','2027-01-25','2027-02-01'],C:['2027-02-08','2027-02-22','2027-03-01','2027-03-01','2027-03-08','2027-03-15','2027-03-15','2027-03-22','2027-03-29','2027-04-05','2027-04-12','2027-04-19']};
+const TESTS=[['2026-10-26','Section A test'],['2027-02-08','Section B test'],['2027-04-12','Memory verse test (all verses)'],['2027-04-19','Testimony and exit test']];
+const REFS={A:['2 Corinthians 5:17','Galatians 2:20','Romans 12:1','John 14:21','2 Timothy 3:16','Joshua 1:8'],B:['Romans 3:23','Isaiah 53:6','Romans 6:23','Hebrews 9:27','Romans 5:8','1 Peter 3:18','Ephesians 2:8-9','Titus 3:5','John 1:12','Revelation 3:20','1 John 5:13','John 5:24','Luke 9:23','Matthew 6:33'],C:['1 Corinthians 3:16','1 Corinthians 2:12','Isaiah 41:10','Philippians 4:13','Lamentations 3:22-23','Numbers 23:19','Isaiah 26:3','1 Peter 5:7','Romans 8:32','Philippians 4:19','Hebrews 2:18','John 13:34-35']};
+const dt=s=>{const[y,m,d]=s.split('-');return new Date(y,m-1,d).getTime()};
+const fd=x=>new Date(typeof x==='string'?dt(x):x).toLocaleDateString(undefined,{month:'short',day:'numeric'});
+let state={verses:[]};
+try{const s=localStorage.getItem(KEY);if(s)state=JSON.parse(s)}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}};
+let ui={tab:'practice',scope:'*',addSec:'A',q:null,i:0,mode:'blanks',level:0,shown:false,checked:null,typed:'',addText:'',msg:'',del:null,stats:{got:0,miss:0}};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const L='\\p{L}\\p{N}', norm=w=>w.toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');
+const hash=s=>{let x=0;for(const c of s)x=(x*31+c.charCodeAt(0))>>>0;return x};
+const cur=()=>state.verses.find(v=>v.id===ui.q[ui.i]);
+const sec=v=>v.sec||'A', avail=v=>!v.cls||dt(v.cls)-7*DAY<=Date.now(), inScope=v=>rev(v)&&(ui.scope==='*'||sec(v)===ui.scope);
+const cstep=v=>{const n=v.text.split(/\s+/).filter(w=>/[\p{L}\p{N}]/u.test(w)).length,step=1;return {n,step,max:Math.ceil(n/step)}};
+const setLevel=()=>{if(ui.q&&ui.i<ui.q.length){const v=cur();if(v)ui.level=Math.round(cstep(v).max*Math.min(v.box,5)/5)}};
+const dayStart=d=>{const t=new Date();t.setHours(0,0,0,0);return t.getTime()+d*DAY};
+function applySchedule(){
+  if(!state.verses.length&&!state.seeded){Object.keys(REFS).forEach(s=>REFS[s].forEach((r,i)=>state.verses.push({id:'seed'+s+i,ref:r,text:'',sec:s,box:0,ease:2.5,ivl:0,next:0})));state.seeded=true;save()}
+  if(!state.tests)state.tests=TESTS.map(t=>[...t]);
+  const n={};let ch=false;
+  state.verses.forEach(v=>{const s=sec(v),k=n[s]=(n[s]||0),d=SCHED[s]&&SCHED[s][k];n[s]=k+1;if(d&&!v.cls){v.cls=d;ch=true}});
+  if(ch)save();
+}
+const upcoming=()=>{const t0=dayStart(0);return state.verses.filter(v=>v.cls&&dt(v.cls)>=t0).sort((a,b)=>dt(a.cls)-dt(b.cls))};
+const weekVerses=()=>{const u=upcoming();return u.length?u.filter(v=>v.cls===u[0].cls):[]};
+const rev=v=>!!v.text&&avail(v)&&!weekVerses().includes(v);
+function startQuiz(){
+  Object.assign(ui,{focus:true,q:weekVerses().filter(v=>v.text).map(v=>v.id).sort(()=>Math.random()-.5),i:0,shown:false,checked:null,typed:'',stats:{got:0,miss:0},mode:'type'});
+}
+function startWeek(){
+  Object.assign(ui,{focus:true,q:weekVerses().filter(v=>v.text).map(v=>v.id),i:0,shown:false,checked:null,typed:'',stats:{got:0,miss:0},mode:'blanks'});
+  setLevel();
+}
+function weekBox(){
+  const up=upcoming(),t0=dayStart(0);
+  if(!up.length)return '';
+  const nc=up[0].cls,wk=up.filter(v=>v.cls===nc),days=Math.round((dt(nc)-t0)/DAY);
+  const t=state.tests.filter(x=>dt(x[0])>=t0).sort((a,b)=>dt(a[0])-dt(b[0]))[0];
+  const when=days===0?'today':days===1?'tomorrow':'in '+days+' days';
+  const todo=wk.filter(v=>v.text&&(!v.last||v.last<dt(v.cls)-7*DAY)),miss=wk.filter(v=>!v.text);
+  const rem=miss.length?`<p class="remind">Add the verse text for ${miss.map(v=>esc(v.ref)).join(' and ')} in My verses to start studying.</p>`:todo.length?`<p class="remind">You haven’t studied ${todo.map(v=>esc(v.ref)).join(' or ')} yet. Tap Study this week to start.</p>`:`<p class="remind ok">You’ve studied this week’s ${wk.length>1?'verses':'verse'}. Take the quiz to check yourself.</p>`;
+  return `<div class="card week">${rem}<p class="meta">Next class: ${new Date(dt(nc)).toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'})}, ${when}</p><p class="wk">${wk.map(v=>esc(v.ref)).join(' and ')}</p>${t?`<p class="note">Next test: ${esc(t[1])}, ${fd(t[0])}</p>`:''}${wk.some(v=>v.text)?`<div class="row"><button class="primary" data-act="study">Study this week</button><button class="ghost" data-act="quiz">Quiz me</button></div>`:''}</div>`;
+}
+
+function startSession(all){
+  const t=Date.now();
+  const list=state.verses.filter(v=>inScope(v)&&(all||v.next<=t)).map(v=>v.id);
+  if(all)list.sort(()=>Math.random()-.5);
+  Object.assign(ui,{focus:false,q:list,i:0,shown:false,checked:null,typed:'',stats:{got:0,miss:0}});
+  setLevel();
+}
+
+function parse(text){
+  const added=[],bad=[];let curSec=(ui.addSec||'A').trim()||'A';
+  text.split('\n').map(l=>l.trim()).filter(Boolean).forEach(line=>{
+    const h=line.match(/^#+\s*(.+)$/)||line.match(/^section\s+(\S+?)\s*:?$/i)||line.match(/^([A-Za-z0-9])\s*:?$/);
+    if(h){curSec=h[1].replace(/^section\s+/i,'').trim();return}
+    let ref,body;
+    if(line.includes('|')){const k=line.indexOf('|');ref=line.slice(0,k).trim();body=line.slice(k+1).trim()}
+    else{const m=line.match(/^((?:[1-3]\s*)?[A-Za-z][A-Za-z ]*?\s\d+:\d+(?:\s*[-–]\s*\d+)?)\s*[–—:-]?\s*(.+)$/);if(m){ref=m[1];body=m[2]}}
+    if(ref&&body){const key=r=>r.toLowerCase().replace(/[–—]/g,'-').replace(/[^a-z0-9:-]/g,''),ex=state.verses.find(x=>key(x.ref)===key(ref));if(ex){ex.text=body;added.filled=(added.filled||0)+1}else added.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),ref,text:body,sec:curSec,box:0,ease:2.5,ivl:0,next:0})}
+    else bad.push(line.slice(0,40));
+  });
+  return {added,bad};
+}
+
+function diff(target,typed){
+  const a=target.split(/\s+/).filter(Boolean),b=typed.split(/\s+/).filter(Boolean);
+  const A=a.map(norm),B=b.map(norm),n=a.length,m=b.length;
+  const d=Array.from({length:n+1},()=>Array(m+1).fill(0));
+  for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--)d[i][j]=A[i]===B[j]?d[i+1][j+1]+1:Math.max(d[i+1][j],d[i][j+1]);
+  let i=0,j=0;const out=[];
+  while(i<n||j<m){
+    if(i<n&&j<m&&A[i]===B[j]){out.push(`<span class="ok">${esc(a[i])}</span>`);i++;j++}
+    else if(j>=m||(i<n&&d[i+1][j]>=d[i][j+1])){out.push(`<span class="miss">${esc(a[i])}</span>`);i++}
+    else{out.push(`<span class="extra">${esc(b[j])}</span>`);j++}
+  }
+  return {html:out.join(' '),acc:n?Math.round(d[0][0]/n*100):0};
+}
+
+function blanks(v){
+  const words=v.text.split(/\s+/);
+  const idx=words.map((_,i)=>i).filter(i=>/[\p{L}\p{N}]/u.test(words[i])).sort((x,y)=>hash(v.id+x)-hash(v.id+y));
+  const hide=new Set(idx.slice(0,ui.level*cstep(v).step));
+  return words.map((w,i)=>{
+    if(!hide.has(i))return esc(w);
+    const m=w.match(/^([^\p{L}\p{N}]*)(.*?)([^\p{L}\p{N}]*)$/u);
+    return `${esc(m[1])}<button class="gap" style="--n:${m[2].length}" data-act="peek" aria-label="Hidden word, tap to reveal">${esc(m[2])}</button>${esc(m[3])}`;
+  }).join(' ');
+}
+
+const sched=(v,r)=>{let e=v.ease||2.5,i=v.ivl||0;
+  if(r==='again'){e=Math.max(1.3,e-.2);i=0}
+  else if(r==='hard'){e=Math.max(1.3,e-.15);i=Math.max(1,Math.round(i*1.2))}
+  else if(r==='good')i=i<1?1:i<2?3:Math.round(i*e);
+  else{e+=.15;i=Math.max(4,Math.round((i||1)*e*1.3))}
+  return {e,i:Math.min(i,45)}};
+const fmt=d=>d?d+'d':'soon';
+const gradeHtml=()=>{const v=cur();return `<div class="grade"><p>How well did you remember it? The time under each button is when the verse comes back.</p><div class="row rate">${[['again','Again'],['hard','Hard'],['good','Good'],['easy','Easy']].map(([r,n])=>`<button class="${r==='good'?'primary':'ghost'}" data-act="rate" data-v="${r}">${n}<small>${fmt(sched(v,r).i)}</small></button>`).join('')}</div></div>`};
+
+function scopeBar(){
+  if(!state.verses.length)return '';
+  const secs=[...new Set(state.verses.map(sec))];
+  const n=t=>state.verses.filter(v=>rev(v)&&v.next<=Date.now()&&(!t||sec(v)===t)).length;
+  const chip=(k,name,list)=>`<button data-act="scope" data-v="${esc(k)}" aria-pressed="${ui.scope===k}">${name} (${list.filter(v=>v.box>=3).length}/${list.length})</button>`;
+  return `<h2 style="margin:22px 0 8px">Earlier verses</h2><p class="duebox"><b>Due today: ${n()}</b> <span>(${secs.map(s=>esc(s)+' '+n(s)).join(', ')})</span></p><div class="modes" role="group" aria-label="What to practice">${secs.map(s=>chip(s,'Section '+esc(s),state.verses.filter(v=>sec(v)===s))).join('')}${chip('*','Final review: all',state.verses)}</div><p class="note">The number in brackets is verses learned out of the total. A verse counts as learned after three Good or Easy reviews in a row.</p>`;
+}
+const practice=()=>ui.focus?`<button class="ghost" data-act="back" style="margin-bottom:12px">Back to Practice</button>`+practiceInner():weekBox()+scopeBar()+practiceInner();
+function practiceInner(){
+  if(state.verses.length&&!state.verses.some(v=>v.text))return `<div class="card"><h2>Add the verse text</h2><p class="prompt">The verse references and class dates are already here. Add the text of each verse to start practicing.</p><button class="primary" data-act="tab" data-v="verses">Add verse text</button></div>`;
+  if(!state.verses.length)return `<div class="card"><h2>No verses yet</h2><p class="prompt">Add the verses you want to memorize, then come back here to practice them.</p><button class="primary" data-act="tab" data-v="verses">Add verses</button></div>`;
+  if(ui.q===null)startSession(false);
+  if(!ui.q.length)return `<div class="card"><h2>Nothing due right now</h2><p class="prompt">Every verse is scheduled for later. You can still practice them all.</p><button class="primary" data-act="all">Practice all verses</button></div>`;
+  if(ui.i>=ui.q.length)return `<div class="card"><h2>Session complete</h2><p class="prompt">${ui.stats.got} got it, ${ui.stats.miss} missed.</p><div class="row">${ui.focus?'<button class="primary" data-act="back">Back to Practice</button>':'<button class="primary" data-act="all">Practice all verses again</button>'}</div></div>`;
+  const v=cur(),pct=Math.round(ui.i/ui.q.length*100);
+  const modes=[['recall','Recall'],['blanks','Cover words'],['type','Type it']].map(([k,n])=>`<button data-act="mode" data-v="${k}" aria-pressed="${ui.mode===k}">${n}</button>`).join('');
+  let body='';
+  if(ui.mode==='recall'){
+    body=ui.shown?`<p class="verse">${esc(v.text)}</p>${gradeHtml()}`:`<p class="prompt">Say the verse aloud from memory, then check yourself.</p><button class="primary" data-act="show">Show verse</button>`;
+  }else if(ui.mode==='blanks'){
+    body=`<div class="levels"><button data-act="less"${ui.level<1?' disabled':''}>Show 1 word</button><button data-act="more"${ui.level>=cstep(v).max?' disabled':''}>Cover 1 word</button><span>${Math.round(Math.min(ui.level*cstep(v).step,cstep(v).n)/cstep(v).n*100)}% covered</span></div><p class="verse">${blanks(v)}</p><p class="note">Tap a covered word to peek. Keep covering more words as the verse sticks, then say it aloud.</p>${gradeHtml()}`;
+  }else{
+    body=`<textarea id="typed" placeholder="Type the verse from memory" aria-label="Type the verse from memory">${esc(ui.typed)}</textarea>`;
+    if(ui.checked)body+=`<p class="acc">${ui.checked.acc}% of words matched</p><p class="verse">${ui.checked.html}</p>${gradeHtml()}`;
+    else body+=`<button class="primary" data-act="check">Check</button>`;
+  }
+  return `<div class="card"><div class="bar"><i style="width:${pct}%"></i></div><p class="meta">Verse ${ui.i+1} of ${ui.q.length}, Section ${esc(sec(v))}</p><h2 class="ref">${esc(v.ref)}</h2><div class="modes">${modes}</div>${body}</div>`;
+}
+
+function verses(){
+  const li=v=>`<li><div><b>${esc(v.ref)}</b>${v.text?`<p>${esc(v.text)}</p>`:`<textarea id="t-${v.id}" placeholder="Paste the verse text here" aria-label="Verse text for ${esc(v.ref)}" style="min-height:70px;margin:6px 0"></textarea><button class="ghost" data-act="savetext" data-id="${v.id}">Save text</button>`}<small>${v.cls?'Class due '+fd(v.cls)+(avail(v)?'':' (locked until '+fd(dt(v.cls)-7*DAY)+')')+', ':''}Step ${v.box} of 5${v.next>Date.now()?', next review '+new Date(v.next).toLocaleDateString():', due now'}</small></div><button class="del${ui.del===v.id?' sure':''}" data-act="del" data-id="${v.id}">${ui.del===v.id?'Tap again to delete':'Delete'}</button></li>`;
+  const items=[...new Set(state.verses.map(sec))].map(s=>`<h3 class="sec">Section ${esc(s)}</h3><ul class="list">${state.verses.filter(v=>sec(v)===s).map(li).join('')}</ul>`).join('');
+  return `<div class="card"><h2>Add verses</h2>${state.verses.some(v=>!v.text)?`<p class="remind">The verse references and class dates are already loaded. Paste the verse text below, or add each one in the list.</p>`:''}<p class="note">Put a section heading on its own line (Section A, Section B, Section C), then one verse per line, written as Reference | verse text. Paste the text from the translation you are memorizing.</p><label class="note">Section for verses without a heading<input id="addsec" value="${esc(ui.addSec)}"></label><textarea id="add" placeholder="Section A&#10;John 3:16 | For God so loved the world…&#10;Section B&#10;Psalm 23:1 | The Lord is my shepherd…" aria-label="Verses to add">${esc(ui.addText)}</textarea><button class="primary" data-act="add">Add verses</button><p class="msg" role="status">${ui.msg}</p></div>${items}${state.verses.length?`<div class="card" style="margin-top:22px"><h2>Class dates changed?</h2><p class="note">Dates may move during the term. Push every date that hasn’t passed yet later by this many weeks.</p><label class="note">Weeks<input id="shiftw" value="1"></label><button class="ghost" data-act="shift">Shift upcoming dates</button></div>`:''}`;
+}
+
+function render(){
+  applySchedule();
+  const due=state.verses.filter(v=>rev(v)&&v.next<=Date.now()).length;
+  $('#due').textContent=state.verses.length?`${due} due today, ${state.verses.length} saved`:'';
+  document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===ui.tab));
+  $('#app').innerHTML=ui.tab==='practice'?practice():verses();
+}
+
+function grade(r){
+  const v=cur(),s=sched(v,r);
+  v.ease=s.e;v.ivl=s.i;v.last=Date.now();
+  if(r==='again'){v.box=0;v.next=Date.now();ui.stats.miss++;if(ui.q.filter(x=>x===v.id).length<2)ui.q.push(v.id)}
+  else{v.box=Math.min(v.box+(r==='easy'?2:r==='good'?1:0),5);v.next=dayStart(s.i);ui.stats.got++}
+  save();ui.i++;ui.shown=false;ui.checked=null;ui.typed='';setLevel();render();
+}
+
+document.addEventListener('input',e=>{
+  if(e.target.id==='typed')ui.typed=e.target.value;
+  if(e.target.id==='add')ui.addText=e.target.value;
+  if(e.target.id==='addsec')ui.addSec=e.target.value;
+});
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]');if(!b)return;
+  const a=b.dataset.act,v=b.dataset.v;
+  if(a==='peek'){b.classList.toggle('on');return}
+  if(a==='reveal'){document.querySelectorAll('.gap').forEach(g=>g.classList.add('on'));return}
+  if(a==='tab'){ui.tab=v;ui.del=null;ui.msg='';if(v==='practice'){ui.q=null;ui.focus=false}}
+  else if(a==='scope'){ui.scope=v;ui.q=null}
+  else if(a==='quiz')startQuiz();
+  else if(a==='savetext'){const t=$('#t-'+b.dataset.id).value.trim(),x=state.verses.find(y=>y.id===b.dataset.id);if(x&&t){x.text=t;save()}}
+  else if(a==='study')startWeek();
+  else if(a==='back'){ui.focus=false;ui.q=null}
+  else if(a==='shift'){
+    const w=parseInt($('#shiftw').value)||0,t0=dayStart(0);
+    const mv=s=>{const d=new Date(dt(s));d.setDate(d.getDate()+7*w);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+    state.verses.forEach(x=>{if(x.cls&&dt(x.cls)>=t0)x.cls=mv(x.cls)});
+    state.tests.forEach(x=>{if(dt(x[0])>=t0)x[0]=mv(x[0])});
+    save();ui.msg=`Upcoming dates moved by ${w} week${Math.abs(w)===1?'':'s'}.`;
+  }
+  else if(a==='mode'){ui.mode=v;ui.shown=false;ui.checked=null}
+  else if(a==='level')ui.level=+v;
+  else if(a==='show')ui.shown=true;
+  else if(a==='check')ui.checked=diff(cur().text,ui.typed);
+  else if(a==='rate')return grade(v);
+  else if(a==='more')ui.level=Math.min(cstep(cur()).max,ui.level+1);
+  else if(a==='less')ui.level=Math.max(0,ui.level-1);
+  else if(a==='all')startSession(true);
+  else if(a==='add'){
+    const r=parse(ui.addText);state.verses.push(...r.added);save();
+    ui.msg=(r.added.filled?`Filled in ${r.added.filled} verse${r.added.filled>1?'s':''}. `:'')+(r.added.length?`Added ${r.added.length} verse${r.added.length>1?'s':''}. `:'')+(r.bad.length?`Couldn’t read: ${esc(r.bad.join('; '))}. Use the format Reference | verse text.`:'');
+    if(!r.bad.length)ui.addText='';
+    else ui.addText=r.bad.join('\n');
+    if(!r.added.length&&!r.added.filled&&!r.bad.length)ui.msg='Paste at least one verse first.';
+  }
+  else if(a==='del'){
+    if(ui.del===b.dataset.id){state.verses=state.verses.filter(x=>x.id!==ui.del);ui.del=null;save()}
+    else ui.del=b.dataset.id;
+  }
+  render();
+});
+render();
+</script>
+</body>
+</html>
